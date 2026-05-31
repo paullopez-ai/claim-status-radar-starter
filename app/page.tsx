@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import { LoginForm } from "@/components/login-form"
 import { MockModeBanner } from "@/components/mock-mode-banner"
 import { SandboxModeBanner } from "@/components/sandbox-mode-banner"
+import { SandboxUnavailableBanner } from "@/components/sandbox-unavailable-banner"
 import { SandboxDevConsole } from "@/components/sandbox-dev-console"
 import { SandboxDisclosure } from "@/components/sandbox-disclosure"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -52,6 +53,7 @@ export default function Home() {
   // Mock mode is the public demo — no login required. Sandbox still gates on auth.
   const [isAuthenticated, setIsAuthenticated] = useState(() => getInitialMode() === "mock")
   const [appMode, setAppMode] = useState<AppMode>(getInitialMode)
+  const [sandboxNotice, setSandboxNotice] = useState<string | null>(null)
   const [consoleOpen, setConsoleOpen] = useState(false)
   const [consoleEntries, setConsoleEntries] = useState<ConsoleLogEntry[]>([])
 
@@ -153,6 +155,34 @@ export default function Home() {
     }
   }, [appMode])
 
+  // Mode toggle: switching to sandbox requires Optum API credentials. On the
+  // public mock demo those are unset, so we block the switch and show a notice
+  // instead of running probes that just log connectivity failures.
+  const handleModeChange = useCallback(async (newMode: AppMode) => {
+    if (newMode !== "sandbox") {
+      setSandboxNotice(null)
+      setAppMode(newMode)
+      return
+    }
+
+    try {
+      const res = await fetch("/api/sandbox-status")
+      const { available } = (await res.json()) as { available: boolean }
+      if (!available) {
+        setSandboxNotice("Sandbox mode requires API credentials. See the README to configure them.")
+        setAppMode("mock")
+        return
+      }
+    } catch {
+      setSandboxNotice("Sandbox mode requires API credentials. See the README to configure them.")
+      setAppMode("mock")
+      return
+    }
+
+    setSandboxNotice(null)
+    setAppMode("sandbox")
+  }, [])
+
   // Derive sorted/filtered claims
   const processedClaims = useMemo(() => {
     const filtered = filterClaims(state.claimResults, state.filters)
@@ -173,6 +203,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <MockModeBanner isMock={isMock} />
       <SandboxModeBanner isSandbox={isSandbox} />
+      <SandboxUnavailableBanner message={sandboxNotice} onDismiss={() => setSandboxNotice(null)} />
 
       <LoadingOverlay
         isVisible={state.feedStatus === "refreshing"}
@@ -199,7 +230,7 @@ export default function Home() {
                   API Console
                 </Label>
               </div>
-              <ModeToggle mode={appMode} onModeChange={setAppMode} />
+              <ModeToggle mode={appMode} onModeChange={handleModeChange} />
               <RefreshButton
                 isRefreshing={state.feedStatus === "refreshing"}
                 onRefresh={handleRefresh}
