@@ -16,8 +16,8 @@ In the Vercel project settings, go to **Settings > Environment Variables** and a
 
 | Variable | Value | Notes |
 |----------|-------|-------|
-| `AUTH_USERNAME` | `admin` | Or whatever you want for demos |
-| `AUTH_PASSWORD` | `your_password` | Or whatever you want for demos |
+| `AUTH_USERNAME` | *(choose your own)* | Only needed for sandbox mode |
+| `AUTH_PASSWORD` | *(choose your own)* | Only needed for sandbox mode |
 | `NEXT_PUBLIC_APP_ENV` | `mock` | Use `mock` for demos, `sandbox` if you want live probes |
 | `OPTUM_CLIENT_ID` | *(your Optum client ID)* | Only needed for sandbox mode |
 | `OPTUM_CLIENT_SECRET` | *(your Optum client secret)* | Only needed for sandbox mode |
@@ -26,12 +26,10 @@ In the Vercel project settings, go to **Settings > Environment Variables** and a
 | `OPTUM_PROVIDER_TAX_ID` | *(your provider tax ID)* | Only needed for sandbox mode |
 | `ANTHROPIC_API_KEY` | *(your Anthropic API key)* | Only needed for sandbox/production |
 
-**For mock-mode-only deployment, you only need these three:**
-- `AUTH_USERNAME`
-- `AUTH_PASSWORD`
+**For mock-mode-only deployment, you only need one variable:**
 - `NEXT_PUBLIC_APP_ENV` = `mock`
 
-All other variables can be left blank. The app runs entirely on fixture data in mock mode.
+All other variables can be left blank. Mock mode has no login and runs entirely on fixture data.
 
 ## 3. Deploy
 

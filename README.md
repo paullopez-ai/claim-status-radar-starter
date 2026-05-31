@@ -110,16 +110,16 @@ bun install
 bun dev
 ```
 
-Open http://localhost:3000. You'll see the login page. Default credentials are whatever you set in `.env.local`.
+Open http://localhost:3000. Mock mode loads with no login. Sandbox mode shows a login page using the credentials you set in `.env.local`.
 
 ### Required Environment Variables
 
 Copy `.env.example` and fill in your values:
 
 ```bash
-# Login credentials
+# Login credentials — choose your own (only used in sandbox mode)
 AUTH_USERNAME=
-AUTH_PASSWORD=your_password
+AUTH_PASSWORD=
 
 # App mode (mock or sandbox -- toggle also available in UI)
 NEXT_PUBLIC_APP_ENV=mock
@@ -135,7 +135,18 @@ OPTUM_PROVIDER_TAX_ID=
 ANTHROPIC_API_KEY=
 ```
 
-In mock mode, the only env vars you need are `AUTH_USERNAME`, `AUTH_PASSWORD`, and `NEXT_PUBLIC_APP_ENV=mock`. Everything else can be blank.
+In mock mode, the only env var you need is `NEXT_PUBLIC_APP_ENV=mock`. Everything else can be blank, and there is no login.
+
+---
+
+## Getting Optum API Access
+
+This project runs fully in **mock mode** with no credentials — nothing to configure. To call the real Optum APIs (sandbox or production), register for Optum developer access:
+
+1. Sign up at the **Optum Developer Marketplace**: https://marketplace.optum.com
+2. Create an application and subscribe to the relevant API for **sandbox** access.
+3. Optum issues your `OPTUM_CLIENT_ID`, `OPTUM_CLIENT_SECRET`, the token/API URLs, and your provider tax ID.
+4. Copy those into `.env.local` (see `.env.example`) and set your own login credentials — **this repository ships none**.
 
 ---
 
